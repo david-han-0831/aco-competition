@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 헬퍼 함수
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // users 컬렉션
+    match /users/{userId} {
+      // 읽기: 인증된 사용자는 자신의 정보와 다른 사용자 정보 읽기 가능
+      allow read: if isAuthenticated();
+      
+      // 생성: 자신의 문서만 생성 가능 (userId가 자신의 uid와 일치)
+      allow create: if isAuthenticated() && 
+        request.auth.uid == userId &&
+        request.resource.data.uid == userId;
+      
+      // 수정/삭제: 관리자만 가능
+      allow update, delete: if isAdmin();
+    }
+    
+    // applications 컬렉션
+    match /applications/{applicationId} {
+      // 읽기: 본인 또는 관리자만 가능
+      // 리스트 쿼리의 경우 인증된 사용자는 모두 읽기 가능 (클라이언트에서 필터링)
+      allow read: if isAuthenticated();
+      
+      // 생성: 인증된 사용자가 자신의 신청서만 생성 가능
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // 수정/삭제: 관리자만 가능
+      // 개발 단계: 임시로 인증된 사용자 모두 허용 (프로덕션에서는 isAdmin() 사용 권장)
+      allow update, delete: if isAuthenticated();
+      // 프로덕션용: allow update, delete: if isAdmin();
+    }
+    
+    // settings 컬렉션
+    match /settings/{document=**} {
+      // 읽기: 모든 사용자 가능 (공개)
+      allow read: if true;
+      
+      // 쓰기: 관리자만 가능
+      allow write: if isAdmin();
+    }
+  }
+}
