@@ -5,12 +5,9 @@ import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'fireba
 import { auth, db } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { 
-  User, 
   Clock, 
   CheckCircle, 
   XCircle, 
-  Music2,
-  Calendar,
   FileText,
   ArrowRight,
   RotateCcw
@@ -149,8 +146,8 @@ export default function MyPage() {
           })
           // 클라이언트 측에서 createdAt 기준 내림차순 정렬
           apps.sort((a, b) => {
-            const dateA = new Date(a.createdAt || 0).getTime()
-            const dateB = new Date(b.createdAt || 0).getTime()
+            const dateA = typeof a.createdAt === 'string' ? new Date(a.createdAt).getTime() : 0
+            const dateB = typeof b.createdAt === 'string' ? new Date(b.createdAt).getTime() : 0
             return dateB - dateA
           })
           setApplications(apps)

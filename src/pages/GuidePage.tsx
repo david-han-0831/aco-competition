@@ -1,4 +1,4 @@
-import { FileText, CreditCard, Calendar, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react'
+import { FileText, CreditCard, Calendar, CheckCircle, AlertCircle } from 'lucide-react'
 import {
   Accordion,
   AccordionContent,

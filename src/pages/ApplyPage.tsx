@@ -9,7 +9,7 @@ import {
   signOut,
   User as FirebaseUser
 } from 'firebase/auth'
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, query, where, updateDoc, Timestamp, onSnapshot, getDocs } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, query, where, updateDoc, onSnapshot } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { applicationSchema, type ApplicationFormData } from '@/utils/validators'
 import { Button } from '@/components/ui/button'

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User as FirebaseUser } from 'firebase/auth'
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
@@ -56,7 +56,6 @@ const categoryMap: Record<string, string> = {
 
 export default function AdminPage() {
   const location = useLocation()
-  const navigate = useNavigate()
   const [user, setUser] = useState<FirebaseUser | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState<string>('all')

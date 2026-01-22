@@ -16,12 +16,6 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Column - Text */}
             <div className="space-y-12 animate-fade-up">
-              {/* Badge - Improved Design */}
-              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary-burgundy/8 to-primary-burgundy/5 border-2 border-primary-burgundy/20 shadow-sm backdrop-blur-sm">
-                <div className="w-2 h-2 rounded-full bg-primary-burgundy animate-pulse" />
-                <span className="text-sm font-semibold text-primary-burgundy tracking-wide">2026 제1회</span>
-              </div>
-              
               {/* Main Title */}
               <div className="space-y-6">
                 <h1 className="font-display text-display-lg lg:text-display-xl text-foreground leading-none">
