@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { COMPETITION_INFO } from '@/utils/constants'
 
 export default function GuidePage() {
   return (
@@ -126,19 +127,31 @@ export default function GuidePage() {
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-3">
                       <span className="text-amber-600 font-bold">•</span>
-                      <span>신청 마감일은 <strong className="text-foreground">2025년 12월 31일</strong>이며, 마감일 이후 신청은 불가합니다.</span>
+                      <span>전공자 / 아마추어 부문은 <strong className="text-foreground">별도 심사</strong>로 진행됩니다.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-amber-600 font-bold">•</span>
-                      <span>참가비 납부 후 접수 취소 시, <strong className="text-foreground">환불이 불가</strong>하오니 신중히 신청해 주시기 바랍니다.</span>
+                      <span>반주자는 <strong className="text-foreground">참가자 본인이 대동</strong>해야 합니다.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-amber-600 font-bold">•</span>
-                      <span>연주 시간은 부문별로 <strong className="text-foreground">5분 이내</strong>로 제한됩니다.</span>
+                      <span>반주자 연결이 필요한 경우, 사전 콩쿨 게시판 신청 필수 (반주비 별도).</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-amber-600 font-bold">•</span>
-                      <span>반주자가 필요한 경우, 참가자가 직접 섭외해야 합니다.</span>
+                      <span>모든 곡은 <strong className="text-foreground">암보 연주</strong>로 진행됩니다.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-amber-600 font-bold">•</span>
+                      <span>연주 시간이 초과될 경우, 심사위원 판단에 따라 연주가 중단될 수 있습니다.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-amber-600 font-bold">•</span>
+                      <span>접수기간은 <strong className="text-foreground">{COMPETITION_INFO.contact.period}</strong>이며, 마감 이후 신청은 불가합니다.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-amber-600 font-bold">•</span>
+                      <span>참가비 납부 후 접수 취소 시 환불이 불가하오니 신중히 신청해 주시기 바랍니다.</span>
                     </li>
                   </ul>
                 </div>
@@ -158,28 +171,40 @@ export default function GuidePage() {
             <Accordion type="single" collapsible className="space-y-4">
               {[
                 {
-                  q: '참가 자격에 제한이 있나요?',
-                  a: '아니요! 음악을 사랑하는 모든 분들이 참가하실 수 있습니다. 나이, 전공, 경력에 제한이 없습니다.'
+                  q: '참가 부문은 어떻게 되나요?',
+                  a: '피아노, 관/현악, 성악/동요 부문이 있으며, 전공자 및 아마추어 모두 참가 가능합니다.'
                 },
                 {
-                  q: '연주곡은 자유롭게 선택할 수 있나요?',
-                  a: '네, 부문별로 연주곡을 자유롭게 선택하실 수 있습니다. 단, 연주 시간은 5분 이내로 제한됩니다.'
+                  q: '참가곡 및 연주 시간은?',
+                  a: '피아노, 관/현악, 성악/동요 모두 자유곡 1곡(10분 이내)로 진행됩니다.'
+                },
+                {
+                  q: '참가자격(연령부)은?',
+                  a: '유/초등부, 중/고등부, 대학/일반부로 구분됩니다.'
+                },
+                {
+                  q: '접수기간은 언제인가요?',
+                  a: `2026년 2월 1일(일) ~ 6월 26일(금) 23:59까지입니다.`
+                },
+                {
+                  q: '참가비 및 입금계좌는?',
+                  a: `얼리버드 접수 10만원, 5월 1일부터 12만원입니다. 입금계좌: ${COMPETITION_INFO.contact.account} (${COMPETITION_INFO.contact.accountHolder})`
+                },
+                {
+                  q: '접수방법은 어떻게 되나요?',
+                  a: '홈페이지(콩쿨 게시판)를 통해 인터넷 접수합니다. 서면 접수를 원하시면 홈페이지에서 참가신청서 양식을 다운로드해 작성 후 우편으로 제출하시면 됩니다. (우편주소는 전화 문의 바랍니다.)'
+                },
+                {
+                  q: '시상 및 특전은?',
+                  a: '전체 대상: 상금 30만원 + 오케스트라 협연 기회(장소 추후 공지). 각 부문별 1등: 상금 20만원 + 오케스트라 협연 기회. 각 부문별 입상자에게도 오케스트라 협연 기회가 제공됩니다. 모든 수상자에게 안양대학교 평생교육원장 명의 상장이 수여되며, 공동수상 또는 입상자가 없을 수 있습니다.'
                 },
                 {
                   q: '반주자는 어떻게 준비하나요?',
-                  a: '반주자가 필요한 경우 참가자께서 직접 섭외하셔야 합니다. 대회 측에서는 반주자를 제공하지 않습니다.'
+                  a: '반주자는 참가자 본인이 대동해야 합니다. 반주자 연결이 필요한 경우 사전에 콩쿨 게시판에서 신청해야 하며, 반주비는 별도입니다.'
                 },
                 {
-                  q: '참가비 환불이 가능한가요?',
-                  a: '죄송합니다. 참가비 납부 후에는 환불이 불가합니다. 신중하게 신청해 주시기 바랍니다.'
-                },
-                {
-                  q: '대회 일정이 변경될 수 있나요?',
-                  a: '네, 현재 일정은 2026년 1월 1일이지만 변경될 수 있습니다. 확정된 일정은 신청자분들께 개별 안내드립니다.'
-                },
-                {
-                  q: '악보는 제출해야 하나요?',
-                  a: '심사위원을 위한 악보를 대회 당일 지참하셔야 합니다. 악보 제출 부수는 추후 공지됩니다.'
+                  q: '문의처는?',
+                  a: `${COMPETITION_INFO.contact.phone}`
                 }
               ].map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="border-2 border-gray-100 rounded-xl px-6 data-[state=open]:border-primary-burgundy/30 transition-colors">

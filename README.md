@@ -40,6 +40,8 @@ npm run dev
 
 브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
 
+- **Slack 알림**: `npm run dev` 실행 시 슬랙 알림용 로컬 API 서버가 함께 떠서, `.env.local`의 `SLACK_WEBHOOK_URL`로 알림이 전송됩니다. (슬랙 없이 프론트만 띄우려면 `npm run dev:vite` 사용.)
+
 ### 4. 빌드
 
 ```bash

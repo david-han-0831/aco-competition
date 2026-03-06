@@ -12,21 +12,30 @@ import {
   ArrowRight,
   RotateCcw
 } from 'lucide-react'
-import ApplicationDetailModal from '@/components/admin/ApplicationDetailModal'
+import ApplicationEditModal from '@/components/application/ApplicationEditModal'
 
 interface ApplicationWithId {
   id: string
   userId: string
   name: string
-  age?: number
-  gender?: string
-  division?: string
-  category?: string
-  instrument?: string
-  piece?: string
-  status: string
   email?: string
   phone?: string
+  guardianPhone?: string
+  zipcode?: string
+  address?: string
+  addressDetail?: string
+  category?: string
+  schoolGrade?: string
+  division?: string
+  isMajor?: string
+  piece?: string
+  instrument?: string
+  depositorName?: string
+  accompanistName?: string
+  accompanistPhone?: string
+  age?: number
+  gender?: string
+  status: string
   createdAt: Timestamp | string
   updatedAt: Timestamp | string
   appliedAt?: string
@@ -38,6 +47,7 @@ const divisionMap: Record<string, string> = {
   vocal: '성악',
   orchestra: '관현악',
   children_song: '동요',
+  vocal_children: '성악/동요',
 }
 
 const categoryMap: Record<string, string> = {
@@ -45,6 +55,9 @@ const categoryMap: Record<string, string> = {
   middle: '중등부',
   high: '고등부',
   adult: '성인',
+  elementary_middle: '유/초등부',
+  middle_high: '중/고등부',
+  university_general: '대학/일반부',
 }
 
 const statusConfig = {
@@ -113,8 +126,9 @@ export default function MyPage() {
           createdAt: data.createdAt?.toDate?.()?.toISOString().split('T')[0] || data.createdAt || '',
           updatedAt: data.updatedAt?.toDate?.()?.toISOString().split('T')[0] || data.updatedAt || '',
           appliedAt: data.createdAt?.toDate?.()?.toISOString().split('T')[0] || '',
-          paidAt: data.paidAt?.toDate?.()?.toISOString().split('T')[0] || null,
-          piece: data.instrument || data.piece || '',
+          paidAt: data.paidAt ? (data.paidAt?.toDate?.()?.toISOString().split('T')[0] ?? null) : null,
+          piece: data.piece ?? '',
+          instrument: data.instrument ?? '',
         } as ApplicationWithId
       })
       setApplications(apps)
@@ -140,8 +154,9 @@ export default function MyPage() {
               createdAt: data.createdAt?.toDate?.()?.toISOString().split('T')[0] || data.createdAt || '',
               updatedAt: data.updatedAt?.toDate?.()?.toISOString().split('T')[0] || data.updatedAt || '',
               appliedAt: data.createdAt?.toDate?.()?.toISOString().split('T')[0] || '',
-              paidAt: data.paidAt?.toDate?.()?.toISOString().split('T')[0] || null,
-              piece: data.instrument || data.piece || '',
+              paidAt: data.paidAt ? (data.paidAt?.toDate?.()?.toISOString().split('T')[0] ?? null) : null,
+              piece: data.piece ?? '',
+              instrument: data.instrument ?? '',
             } as ApplicationWithId
           })
           // 클라이언트 측에서 createdAt 기준 내림차순 정렬
@@ -305,12 +320,11 @@ export default function MyPage() {
         </section>
       </div>
 
-      {/* Detail Modal */}
-      <ApplicationDetailModal
-        application={selectedApplication}
+      {/* 상세보기 / 수정 모달 (신청 폼과 동일, 데이터 연동 + 수정 가능) */}
+      <ApplicationEditModal
+        application={selectedApplication ? { id: selectedApplication.id, ...selectedApplication } : null}
         open={isDetailModalOpen}
         onOpenChange={setIsDetailModalOpen}
-        // 일반 사용자는 상태 변경 불가 (onStatusChange 전달 안 함)
       />
     </>
   )

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Music2, Award, Calendar, MapPin, Trophy } from 'lucide-react'
+import { COMPETITION_INFO } from '@/utils/constants'
 
 export default function HomePage() {
   return (
@@ -83,31 +84,30 @@ export default function HomePage() {
             <div className="w-20 h-1 bg-accent-gold mx-auto" />
           </div>
 
-          {/* Cards Grid */}
+          {/* Cards Grid — 포스터 내용 기준 */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {/* Card 1 - 참가 부문 */}
             <div className="group relative p-10 bg-white rounded-2xl border-2 border-gray-200 hover:border-primary-burgundy/40 transition-all duration-500 hover:shadow-elegant flex flex-col h-full">
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-primary-burgundy rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg">
                 <Music2 className="w-8 h-8 text-white" />
               </div>
-              
               <h3 className="text-2xl font-display mb-6 text-foreground">참가 부문</h3>
               <div className="space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div>
-                    <div className="text-sm text-muted-foreground mb-2">악기</div>
+                    <div className="text-sm text-muted-foreground mb-2">부문</div>
                     <div className="flex flex-wrap gap-2">
-                      {['피아노', '관현악', '성악'].map((instrument, i) => (
+                      {['피아노', '관/현악', '성악/동요'].map((item, i) => (
                         <span key={i} className="px-3 py-1.5 bg-primary-burgundy/10 text-primary-burgundy rounded-full text-sm font-medium">
-                          {instrument}
+                          {item}
                         </span>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground mb-2">연령대</div>
+                    <div className="text-sm text-muted-foreground mb-2">연령부</div>
                     <div className="space-y-1.5">
-                      {['초등부', '중등부', '고등부', '성인'].map((age, i) => (
+                      {['유/초등부', '중/고등부', '대학/일반부'].map((age, i) => (
                         <div key={i} className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
                           <span className="text-sm text-foreground">{age}</span>
@@ -118,7 +118,7 @@ export default function HomePage() {
                 </div>
                 <div className="pt-4 border-t border-gray-100">
                   <div className="text-sm text-muted-foreground mb-1">참가 대상</div>
-                  <div className="text-sm text-foreground">전공자, 아마추어 무관</div>
+                  <div className="text-sm text-foreground">전공자 및 아마추어 모두 참가 가능</div>
                 </div>
               </div>
             </div>
@@ -128,21 +128,27 @@ export default function HomePage() {
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-primary-burgundy rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
-              
               <h3 className="text-2xl font-display mb-6 text-foreground">개최 일시</h3>
               <div className="space-y-6 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div>
                     <div className="text-sm text-muted-foreground mb-1">일시</div>
-                    <div className="text-lg font-semibold text-foreground">2026년 1월 1일</div>
-                    <div className="text-sm text-muted-foreground">(변경 예정)</div>
+                    <div className="text-lg font-semibold text-foreground">
+                      {COMPETITION_INFO.dateTime.includes(' 오후 ') ? (
+                        <>
+                          {COMPETITION_INFO.dateTime.split(' 오후 ')[0]}
+                          <br />
+                          오후 {COMPETITION_INFO.dateTime.split(' 오후 ')[1]}
+                        </>
+                      ) : COMPETITION_INFO.dateTime}
+                    </div>
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
                       장소
                     </div>
-                    <div className="text-lg font-semibold text-foreground">안양대학교 문화관 4층</div>
+                    <div className="text-lg font-semibold text-foreground">{COMPETITION_INFO.location}</div>
                   </div>
                 </div>
               </div>
@@ -153,33 +159,36 @@ export default function HomePage() {
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-accent-gold rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg">
                 <Award className="w-8 h-8 text-white" />
               </div>
-              
               <h3 className="text-2xl font-display mb-6 text-foreground">대회 요강</h3>
               <div className="space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="pb-3 border-b border-gray-200">
                     <div className="text-sm text-muted-foreground mb-1">접수 방법</div>
-                    <div className="text-sm font-semibold text-foreground">인터넷 접수</div>
-                    <div className="text-xs text-muted-foreground mt-1">www.anyang.kr</div>
+                    <div className="text-sm font-semibold text-foreground">인터넷 접수 (홈페이지)</div>
+                    <div className="text-xs text-muted-foreground mt-1">서면 접수 시 참가신청서 양식 다운로드 후<br />우편 제출</div>
                   </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-muted-foreground">접수 기간</span>
-                    <span className="font-semibold text-foreground">12.01~12.31</span>
+                  <div className="pb-3 border-b border-gray-200">
+                    <div className="text-sm text-muted-foreground mb-1 whitespace-nowrap">접수 기간</div>
+                    <div className="font-semibold text-foreground whitespace-pre-line">{COMPETITION_INFO.contact.period}</div>
                   </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-muted-foreground">참가비</span>
-                    <span className="text-2xl font-display font-bold text-primary-burgundy">10<span className="text-base">만원</span></span>
+                  <div className="pb-3 border-b border-gray-200">
+                    <div className="text-sm text-muted-foreground mb-1">참가비</div>
+                    <div className="space-y-0.5 text-foreground font-semibold">
+                      <div className="text-primary-burgundy">얼리버드 접수 10만원</div>
+                      <div className="text-primary-burgundy">5월 1일부터 12만원</div>
+                    </div>
                   </div>
                   <div className="pb-3 border-b border-gray-200">
                     <div className="text-sm text-muted-foreground mb-1">입금계좌</div>
-                    <div className="text-sm font-semibold text-foreground">1234-5678-91011</div>
+                    <div className="text-sm font-semibold text-foreground">{COMPETITION_INFO.contact.account}</div>
+                    <div className="text-xs text-muted-foreground">{COMPETITION_INFO.contact.accountHolder}</div>
                   </div>
                 </div>
                 <div className="pt-4 space-y-2">
-                  <div className="text-xs text-muted-foreground">• 자유곡 10분 내외 1곡</div>
-                  <div className="text-xs text-muted-foreground">• 반복없이 암보로 연주</div>
-                  <div className="text-xs text-muted-foreground">• 성악·관현악 참가자는 반주자 대동</div>
-                  <div className="text-xs text-muted-foreground">• 시간 초과 시 중간 종료 가능</div>
+                  <div className="text-xs text-muted-foreground">• 자유곡 1곡 (10분 이내)</div>
+                  <div className="text-xs text-muted-foreground">• 암보 연주</div>
+                  <div className="text-xs text-muted-foreground">• 반주자는 참가자 본인 대동 (연결 필요 시 사전 신청, 반주비 별도)</div>
+                  <div className="text-xs text-muted-foreground">• 연주 시간 초과 시 심사위원 판단에 따라<br />중단될 수 있음</div>
                 </div>
               </div>
             </div>
@@ -189,24 +198,34 @@ export default function HomePage() {
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-accent-gold rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
-              
               <h3 className="text-2xl font-display mb-6 text-foreground">시상 내역</h3>
               <div className="space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="pb-3 border-b border-gray-200">
                     <div className="text-sm text-muted-foreground mb-1">전체 대상</div>
-                    <div className="text-base font-semibold text-foreground">영산아트홀 협연 기회</div>
-                    <div className="text-xs text-muted-foreground mt-1">(2026년)</div>
+                    <div className="text-base font-semibold text-foreground">
+                      <span className="text-primary-burgundy">상금 30만원</span>
+                      <span className="text-foreground"> + </span>
+                      <span className="text-accent-gold font-medium">오케스트라 협연</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">(장소 추후 공지)</div>
                   </div>
                   <div className="pb-3 border-b border-gray-200">
                     <div className="text-sm text-muted-foreground mb-1">부문별 1등</div>
-                    <div className="text-2xl font-display font-bold text-primary-burgundy">50<span className="text-base">만원</span></div>
+                    <div className="text-2xl font-display font-bold text-primary-burgundy">20<span className="text-base">만원</span></div>
+                    <div className="text-sm text-accent-gold font-medium mt-1">+ 오케스트라 협연 기회</div>
                   </div>
-                </div>
-                <div className="pt-4 space-y-1">
-                  <div className="text-xs text-muted-foreground">부문별 2·3등 및 장려상</div>
-                  <div className="text-xs text-muted-foreground">심사 결과에 따라 시상</div>
-                  <div className="text-xs text-muted-foreground mt-2 italic">※ 공연장은 상황에 따라 변동될 수 있음</div>
+                  <div className="pb-3 border-b border-gray-200">
+                    <div className="text-sm text-muted-foreground mb-1">부문별 입상자</div>
+                    <div className="text-sm font-semibold text-foreground">오케스트라 협연 기회 제공</div>
+                  </div>
+                  <div className="pb-3 border-b border-gray-200">
+                    <div className="text-sm text-muted-foreground mb-1">상장</div>
+                    <div className="text-sm font-semibold text-foreground">안양대학교 평생교육원장 명의 상장<br />수여</div>
+                  </div>
+                  <div className="pt-2">
+                    <div className="text-xs text-muted-foreground italic">※ 공동수상 또는 입상자 없을 수 있음</div>
+                  </div>
                 </div>
               </div>
             </div>

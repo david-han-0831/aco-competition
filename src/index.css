@@ -24,6 +24,8 @@
     --input: 0 0% 90%;
     --ring: 343 78% 32%;
     --radius: 0.75rem;
+    --poster-blue: 220 35% 18%;
+    --poster-gold: 43 74% 49%;
   }
 
   * {

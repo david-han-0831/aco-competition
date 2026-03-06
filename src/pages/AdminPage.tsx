@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User as FirebaseUser } from 'firebase/auth'
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore'
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc, setDoc, serverTimestamp, Timestamp, deleteField } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { 
   Users, 
@@ -17,7 +17,10 @@ import {
 import { Button } from '@/components/ui/button'
 import AdminHeader from '@/components/layout/AdminHeader'
 import ApplicationDetailModal from '@/components/admin/ApplicationDetailModal'
+import { formatPhoneDisplay } from '@/utils/phone'
 import type { Application } from '@/types'
+
+const APPLICATIONS_PER_PAGE = 10
 
 const googleProvider = new GoogleAuthProvider()
 
@@ -31,6 +34,8 @@ interface ApplicationWithId extends Omit<Application, 'createdAt' | 'updatedAt'>
   appliedAt?: string
   paidAt?: string | null
   refundedAt?: string | null
+  needAccompanistRequest?: boolean
+  hasAccompanist?: boolean
 }
 
 const statusConfig = {
@@ -45,6 +50,7 @@ const divisionMap: Record<string, string> = {
   vocal: '성악',
   orchestra: '관현악',
   children_song: '동요',
+  vocal_children: '성악/동요',
 }
 
 const categoryMap: Record<string, string> = {
@@ -52,39 +58,64 @@ const categoryMap: Record<string, string> = {
   middle: '중등부',
   high: '고등부',
   adult: '성인',
+  elementary_middle: '유/초등부',
+  middle_high: '중/고등부',
+  university_general: '대학/일반부',
 }
 
 export default function AdminPage() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [user, setUser] = useState<FirebaseUser | null>(null)
+  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [accompanistFilter, setAccompanistFilter] = useState<'all' | 'requested'>('all') // 반주자 신청 희망자만
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedApplication, setSelectedApplication] = useState<ApplicationWithId | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [applications, setApplications] = useState<ApplicationWithId[]>([])
   const [loading, setLoading] = useState(true)
-  
+  const [listPage, setListPage] = useState(1)
+
   // 현재 탭 확인
-  const currentTab = location.pathname.includes('/applications') 
-    ? 'applications' 
+  const currentTab = location.pathname.includes('/applications')
+    ? 'applications'
     : location.pathname.includes('/users')
     ? 'users'
     : 'dashboard'
 
   // 인증 상태 확인
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
-      setAuthLoading(false)
-      // 로그인하지 않은 경우 로그인 페이지로 리다이렉트하지 않음 (헤더에서 로그인 가능)
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser)
+      if (!firebaseUser) {
+        setUserRole(null)
+        setAuthLoading(false)
+        return
+      }
+      getDoc(doc(db, 'users', firebaseUser.uid))
+        .then((snap) => {
+          const role = snap.exists() && snap.data()?.role === 'admin' ? 'admin' : 'user'
+          setUserRole(role)
+        })
+        .catch(() => setUserRole('user'))
+        .finally(() => setAuthLoading(false))
     })
     return unsubscribe
   }, [])
 
-  // Firestore에서 실시간 데이터 가져오기
+  // user일 때 admin 경로 접근 차단 → 홈으로 리다이렉트
   useEffect(() => {
-    if (!user) {
+    if (authLoading) return
+    if (user && userRole === 'user') {
+      navigate('/', { replace: true })
+    }
+  }, [authLoading, user, userRole, navigate])
+
+  // Firestore에서 실시간 데이터 가져오기 (관리자만)
+  useEffect(() => {
+    if (!user || userRole !== 'admin') {
       setApplications([])
       setLoading(false)
       return
@@ -119,8 +150,8 @@ export default function AdminPage() {
           appliedAt: formatDate(data.createdAt),
           paidAt: data.paidAt ? formatDate(data.paidAt) : null,
           refundedAt: data.refundedAt ? formatDate(data.refundedAt) : null,
-          piece: data.instrument || data.piece || '',
-          // category는 연령대이므로 그대로 유지 (한글 변환은 ApplicationDetailModal에서 처리)
+          piece: data.piece ?? '',
+          instrument: data.instrument ?? '',
           category: data.category,
           division: data.division,
         } as ApplicationWithId
@@ -133,7 +164,7 @@ export default function AdminPage() {
     })
 
     return unsubscribe
-  }, [user])
+  }, [user, userRole])
 
   // 통계 계산
   const stats = {
@@ -147,6 +178,7 @@ export default function AdminPage() {
   // 필터링
   const filteredApplications = applications.filter(app => {
     const matchesStatus = selectedStatus === 'all' || app.status === selectedStatus
+    const matchesAccompanist = accompanistFilter === 'all' || app.needAccompanistRequest === true
     const searchLower = searchQuery.toLowerCase()
     const divisionName = app.division ? divisionMap[app.division] : ''
     const categoryName = app.category ? categoryMap[app.category] : ''
@@ -158,27 +190,45 @@ export default function AdminPage() {
       categoryName.toLowerCase().includes(searchLower) ||
       app.piece?.toLowerCase().includes(searchLower) ||
       app.instrument?.toLowerCase().includes(searchLower)
-    return matchesStatus && matchesSearch
+    return matchesStatus && matchesAccompanist && matchesSearch
   })
+
+  // 페이지네이션: 10개씩
+  const totalPages = Math.max(1, Math.ceil(filteredApplications.length / APPLICATIONS_PER_PAGE))
+  const paginatedApplications = filteredApplications.slice(
+    (listPage - 1) * APPLICATIONS_PER_PAGE,
+    listPage * APPLICATIONS_PER_PAGE
+  )
+
+  // 필터/검색 바뀌면 1페이지로; 페이지 수 줄어들면 현재 페이지 보정
+  useEffect(() => {
+    setListPage(1)
+  }, [selectedStatus, accompanistFilter, searchQuery])
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredApplications.length / APPLICATIONS_PER_PAGE))
+    setListPage((p) => Math.min(p, maxPage))
+  }, [filteredApplications.length])
 
   // 상태 변경 핸들러
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       const appRef = doc(db, 'applications', id)
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status: newStatus,
         updatedAt: Timestamp.now(),
       }
-      
+
       if (newStatus === 'paid') {
         updateData.paidAt = Timestamp.now()
+        updateData.refundedAt = deleteField()
       } else if (newStatus === 'refunded') {
-        // 환불 시 paidAt은 유지하되 refundedAt 추가 가능
         updateData.refundedAt = Timestamp.now()
-      } else if (newStatus !== 'paid' && newStatus !== 'refunded') {
-        updateData.paidAt = null
+      } else {
+        // pending, cancelled 등: paidAt/refundedAt 제거
+        updateData.paidAt = deleteField()
+        updateData.refundedAt = deleteField()
       }
-      
+
       await updateDoc(appRef, updateData)
     } catch (error) {
       console.error('상태 변경 오류:', error)
@@ -226,7 +276,7 @@ export default function AdminPage() {
     }
   }
 
-  if (authLoading) {
+  if (authLoading || (user && userRole === null)) {
     return (
       <>
         <AdminHeader />
@@ -234,6 +284,15 @@ export default function AdminPage() {
           <p className="text-muted-foreground">로딩 중...</p>
         </div>
       </>
+    )
+  }
+
+  // role이 user면 관리자 접근 불가 → 리다이렉트(useEffect), 그 전까지 아무것도 안 보여줌
+  if (user && userRole === 'user') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-muted-foreground">접근 권한이 없습니다. 메인으로 이동합니다.</p>
+      </div>
     )
   }
 
@@ -412,6 +471,17 @@ export default function AdminPage() {
                 <option value="refunded">환불</option>
               </select>
             </div>
+            {/* 반주자 신청 희망자 필터 (연락용) */}
+            <div className="w-full md:w-auto">
+              <select
+                value={accompanistFilter}
+                onChange={(e) => setAccompanistFilter(e.target.value as 'all' | 'requested')}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-primary-burgundy/30 transition-colors font-medium"
+              >
+                <option value="all">전체</option>
+                <option value="requested">반주자 신청 희망만</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -428,39 +498,24 @@ export default function AdminPage() {
             </p>
           </div>
         ) : (
+          <>
           <div className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b-2 border-gray-100">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      이름
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      이메일
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      연락처
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      부문
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      연주곡
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      신청일
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      상태
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                      액션
-                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">이름</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">이메일</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">연락처</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">부문</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">반주자여부</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">신청일</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">상태</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">액션</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filteredApplications.map((app) => (
+                  {paginatedApplications.map((app) => (
                     <tr key={app.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="font-semibold text-foreground">{app.name}</div>
@@ -469,19 +524,21 @@ export default function AdminPage() {
                         <div className="text-sm text-muted-foreground">{app.email || '-'}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-muted-foreground">{app.phone || '-'}</div>
+                        <div className="text-sm text-muted-foreground">{formatPhoneDisplay(app.phone)}</div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary-burgundy/10 text-primary-burgundy text-sm font-medium">
                           {app.division ? divisionMap[app.division] : '-'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate">
-                        {app.piece || app.instrument || '-'}
-                      </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {app.appliedAt}
+                        {app.hasAccompanist === true
+                          ? '동반'
+                          : app.needAccompanistRequest === true
+                            ? '신청 희망'
+                            : '—'}
                       </td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{app.appliedAt}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${statusConfig[app.status as keyof typeof statusConfig].color}`}>
                           {statusConfig[app.status as keyof typeof statusConfig].label}
@@ -489,17 +546,17 @@ export default function AdminPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
+                          <Button
+                            size="sm"
+                            variant="outline"
                             className="rounded-lg"
                             onClick={() => handleViewDetail(app)}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
                           {app.status === 'pending' && (
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               className="bg-green-600 hover:bg-green-700 text-white rounded-lg"
                               onClick={() => handleStatusChange(app.id, 'paid')}
                             >
@@ -514,6 +571,39 @@ export default function AdminPage() {
               </table>
             </div>
           </div>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="flex flex-wrap items-center justify-between gap-4 mt-4 px-1">
+              <p className="text-sm text-muted-foreground">
+                {(listPage - 1) * APPLICATIONS_PER_PAGE + 1}–{Math.min(listPage * APPLICATIONS_PER_PAGE, filteredApplications.length)} / {filteredApplications.length}건
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                  disabled={listPage <= 1}
+                  onClick={() => setListPage((p) => Math.max(1, p - 1))}
+                >
+                  이전
+                </Button>
+                <span className="text-sm font-medium px-2">
+                  {listPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                  disabled={listPage >= totalPages}
+                  onClick={() => setListPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  다음
+                </Button>
+              </div>
+            </div>
+          )}
+          </>
         )}
           </>
         )}

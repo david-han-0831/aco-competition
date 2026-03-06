@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { COMPETITION_INFO } from '@/utils/constants'
 
 export default function AboutPage() {
   return (
@@ -16,11 +17,11 @@ export default function AboutPage() {
             <dl className="space-y-2">
               <div className="flex">
                 <dt className="font-semibold w-24">일시</dt>
-                <dd>2026년 1월 1일 (변경 예정)</dd>
+                <dd>{COMPETITION_INFO.dateTime}</dd>
               </div>
               <div className="flex">
                 <dt className="font-semibold w-24">장소</dt>
-                <dd>안양대학교 문학관 4층</dd>
+                <dd>{COMPETITION_INFO.location}</dd>
               </div>
               <div className="flex">
                 <dt className="font-semibold w-24">주최</dt>

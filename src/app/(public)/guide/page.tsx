@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { COMPETITION_INFO } from '@/utils/constants'
 
 export default function GuidePage() {
   return (
@@ -59,7 +60,7 @@ export default function GuidePage() {
               <div>
                 <h4 className="font-semibold mb-2">3. 입금</h4>
                 <p className="text-sm text-text-secondary">
-                  참가비 10만원을 지정 계좌(1234-5678-91011)로 입금합니다.
+                  참가비 10만원을 지정 계좌({COMPETITION_INFO.contact.account}, {COMPETITION_INFO.contact.accountHolder})로 입금합니다.
                 </p>
               </div>
               <div>
