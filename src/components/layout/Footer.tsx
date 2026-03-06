@@ -1,4 +1,4 @@
-import { Music2, Mail, Phone, MapPin } from 'lucide-react'
+import { Music2, Phone, MapPin } from 'lucide-react'
 import { COMPETITION_INFO } from '@/utils/constants'
 
 const FOOTER_LOCATION = '경기도 안양시\n' + COMPETITION_INFO.location
