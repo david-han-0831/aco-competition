@@ -49,10 +49,6 @@ export default function ApplyPage() {
     },
   })
 
-  const division = watch('division')
-  const category = watch('category')
-  const hasAccompanist = watch('hasAccompanist')
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u)
@@ -357,8 +353,8 @@ export default function ApplyPage() {
                       <Music2 className="w-6 h-6 text-primary-burgundy" />
                     </div>
                     <div>
-                      <div className="font-semibold text-foreground">{user.displayName || '사용자'}</div>
-                      <div className="text-sm text-muted-foreground">{user.email}</div>
+                      <div className="font-semibold text-foreground">{user?.displayName || '사용자'}</div>
+                      <div className="text-sm text-muted-foreground">{user?.email ?? ''}</div>
                     </div>
                   </div>
                   <Button variant="outline" onClick={handleSignOut} className="border-2 hover:bg-gray-50">

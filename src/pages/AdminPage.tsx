@@ -24,10 +24,10 @@ const APPLICATIONS_PER_PAGE = 10
 
 const googleProvider = new GoogleAuthProvider()
 
-interface ApplicationWithId extends Omit<Application, 'createdAt' | 'updatedAt'> {
+interface ApplicationWithId extends Omit<Application, 'createdAt' | 'updatedAt' | 'email' | 'phone' | 'piece'> {
   id: string
-  createdAt: Timestamp | string
-  updatedAt: Timestamp | string
+  createdAt?: string
+  updatedAt?: string
   email?: string
   phone?: string
   piece?: string

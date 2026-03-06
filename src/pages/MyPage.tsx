@@ -322,7 +322,7 @@ export default function MyPage() {
 
       {/* 상세보기 / 수정 모달 (신청 폼과 동일, 데이터 연동 + 수정 가능) */}
       <ApplicationEditModal
-        application={selectedApplication ? { id: selectedApplication.id, ...selectedApplication } : null}
+        application={selectedApplication ? { ...selectedApplication, id: selectedApplication.id } : null}
         open={isDetailModalOpen}
         onOpenChange={setIsDetailModalOpen}
       />

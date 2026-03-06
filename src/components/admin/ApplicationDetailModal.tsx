@@ -11,7 +11,6 @@ import {
   Phone,
   Music,
   MapPin,
-  Calendar,
   CheckCircle,
   XCircle,
   Clock,
