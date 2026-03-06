@@ -45,10 +45,10 @@ export default function Footer() {
           <div>
             <h3 className="font-display text-lg mb-4">문의</h3>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li className="flex items-center gap-2">
+              {/* <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-accent-gold" />
                 <span>contact@example.com</span>
-              </li>
+              </li> */}
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-accent-gold" />
                 <a href={`tel:${COMPETITION_INFO.contact.phone.replace(/-/g, '')}`} className="hover:text-accent-gold transition-colors">

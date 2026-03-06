@@ -1,4 +1,5 @@
 import { Music2, Trophy, Users, Target } from 'lucide-react'
+import { COMPETITION_INFO } from '@/utils/constants'
 
 export default function AboutPage() {
   return (
@@ -93,16 +94,16 @@ export default function AboutPage() {
               </h2>
               <div className="w-20 h-1 bg-accent-gold mx-auto mb-6" />
               <p className="text-xl text-muted-foreground">
-                4개 부문으로 구성된 다양한 무대
+                피아노 · 관/현악 · 성악/동요, 전공자 및 아마추어 모두 참가 가능
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { title: '피아노', desc: '클래식부터 현대곡까지 자유롭게 연주' },
-                { title: '성악', desc: '다양한 성부와 레퍼토리로 참가' },
-                { title: '관현악', desc: '관악기와 현악기의 아름다운 선율' },
-                { title: '동요', desc: '어린이를 위한 특별한 무대' }
+                { title: '피아노', desc: '자유곡 1곡(10분 이내), 암보 연주' },
+                { title: '관/현악', desc: '자유곡 1곡(10분 이내), 반주자 본인 대동' },
+                { title: '성악/동요', desc: '자유곡 1곡(10분 이내), 반주자 본인 대동' },
+                { title: '연령부', desc: '유/초등부 · 중/고등부 · 대학/일반부' }
               ].map((item, i) => (
                 <div key={i} className="group p-8 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-100 hover:border-accent-gold/50 transition-all duration-300">
                   <div className="flex items-start gap-4">
@@ -128,21 +129,36 @@ export default function AboutPage() {
                       <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
                       <div>
                         <div className="text-sm opacity-80 mb-1">일시</div>
-                        <div className="text-xl font-semibold">2026년 1월 1일 (변경 예정)</div>
+                        <div className="text-xl font-semibold">{COMPETITION_INFO.dateTime}</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
                       <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
                       <div>
                         <div className="text-sm opacity-80 mb-1">장소</div>
-                        <div className="text-xl font-semibold">안양대학교 문화관 4층</div>
+                        <div className="text-xl font-semibold">{COMPETITION_INFO.location}</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
                       <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
                       <div>
-                        <div className="text-sm opacity-80 mb-1">주최</div>
-                        <div className="text-xl font-semibold">안양대학교 평생교육원</div>
+                        <div className="text-sm opacity-80 mb-1">접수 기간</div>
+                        <div className="text-xl font-semibold">{COMPETITION_INFO.contact.period}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
+                      <div>
+                        <div className="text-sm opacity-80 mb-1">주최 · 주관</div>
+                        <div className="text-xl font-semibold">{COMPETITION_INFO.organizer}</div>
+                        <div className="text-sm opacity-80 mt-0.5">{COMPETITION_INFO.host}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
+                      <div>
+                        <div className="text-sm opacity-80 mb-1">문의</div>
+                        <div className="text-xl font-semibold">{COMPETITION_INFO.contact.phone}</div>
                       </div>
                     </div>
                   </div>
@@ -152,14 +168,15 @@ export default function AboutPage() {
                   <h3 className="text-2xl font-display mb-6">시상 내역</h3>
                   <div className="space-y-4">
                     {[
-                      { award: '대상', prize: '상장 + 상금 100만원' },
-                      { award: '금상', prize: '상장 + 상금 50만원' },
-                      { award: '은상', prize: '상장 + 상금 30만원' },
-                      { award: '동상', prize: '상장 + 상금 10만원' }
+                      { award: '전체 대상', prize: '상금 30만원 + 오케스트라 협연 (장소 추후 공지)' },
+                      { award: '부문별 1등', prize: '상금 20만원 + 오케스트라 협연' },
+                      { award: '부문별 입상자', prize: '오케스트라 협연 기회 제공' },
+                      { award: '상장', prize: '안양대학교 평생교육원장 명의 상장 수여' },
+                      { award: '참고', prize: '공동수상 또는 입상자 없을 수 있음' }
                     ].map((item, i) => (
-                      <div key={i} className="flex justify-between items-center py-3 border-b border-white/20">
-                        <span className="text-lg font-semibold">{item.award}</span>
-                        <span className="text-sm opacity-80">{item.prize}</span>
+                      <div key={i} className="flex justify-between items-start gap-4 py-3 border-b border-white/20">
+                        <span className="text-lg font-semibold flex-shrink-0">{item.award}</span>
+                        <span className="text-sm opacity-90 text-right">{item.prize}</span>
                       </div>
                     ))}
                   </div>
