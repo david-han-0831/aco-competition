@@ -55,6 +55,11 @@ export interface Application {
   status: ApplicationStatus
   createdAt: Timestamp
   updatedAt: Timestamp
+
+  /** 소프트 삭제: 관리자 삭제 시 true, 목록/통계에서 제외 */
+  deleted?: boolean
+  deletedAt?: Timestamp
+  deletedBy?: string
 }
 
 // Form Data Types

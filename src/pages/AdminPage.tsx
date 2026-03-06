@@ -12,7 +12,8 @@ import {
   Download,
   Eye,
   RotateCcw,
-  UserCircle
+  UserCircle,
+  Trash2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AdminHeader from '@/components/layout/AdminHeader'
@@ -166,17 +167,20 @@ export default function AdminPage() {
     return unsubscribe
   }, [user, userRole])
 
-  // 통계 계산
+  // 소프트 삭제된 항목 제외 (목록·통계용)
+  const activeApplications = applications.filter(app => app.deleted !== true)
+
+  // 통계 계산 (삭제 제외)
   const stats = {
-    total: applications.length,
-    paid: applications.filter(app => app.status === 'paid').length,
-    pending: applications.filter(app => app.status === 'pending').length,
-    cancelled: applications.filter(app => app.status === 'cancelled').length,
-    refunded: applications.filter(app => app.status === 'refunded').length,
+    total: activeApplications.length,
+    paid: activeApplications.filter(app => app.status === 'paid').length,
+    pending: activeApplications.filter(app => app.status === 'pending').length,
+    cancelled: activeApplications.filter(app => app.status === 'cancelled').length,
+    refunded: activeApplications.filter(app => app.status === 'refunded').length,
   }
 
   // 필터링
-  const filteredApplications = applications.filter(app => {
+  const filteredApplications = activeApplications.filter(app => {
     const matchesStatus = selectedStatus === 'all' || app.status === selectedStatus
     const matchesAccompanist = accompanistFilter === 'all' || app.needAccompanistRequest === true
     const searchLower = searchQuery.toLowerCase()
@@ -240,6 +244,25 @@ export default function AdminPage() {
   const handleViewDetail = (app: ApplicationWithId) => {
     setSelectedApplication(app)
     setIsDetailModalOpen(true)
+  }
+
+  // 소프트 삭제 (관리자)
+  const handleSoftDelete = async (app: ApplicationWithId) => {
+    if (!user) return
+    const message = `"${app.name}" 신청을 삭제(숨김) 처리할까요?\n삭제된 신청은 목록에 표시되지 않습니다.`
+    if (!window.confirm(message)) return
+    try {
+      const appRef = doc(db, 'applications', app.id)
+      await updateDoc(appRef, {
+        deleted: true,
+        deletedAt: serverTimestamp(),
+        deletedBy: user.uid,
+        updatedAt: Timestamp.now(),
+      })
+    } catch (error) {
+      console.error('삭제 처리 오류:', error)
+      alert('삭제 처리에 실패했습니다.')
+    }
   }
 
   const handleSignIn = async () => {
@@ -563,6 +586,15 @@ export default function AdminPage() {
                               입금확인
                             </Button>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            onClick={() => handleSoftDelete(app)}
+                            title="삭제(숨김)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>

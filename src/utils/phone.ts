@@ -3,9 +3,10 @@
  * 화면 표시: 하이픈 포맷 (010-1234-5678)
  */
 
-/** 입력값에서 숫자만 추출 (저장용) */
-export function toPhoneDigits(value: string | undefined | null): string {
-  if (value == null || typeof value !== 'string') return ''
+/** 입력값에서 숫자만 추출 (저장용). 문자열이 아니면 빈 문자열 반환. */
+export function toPhoneDigits(value: string | undefined | null | unknown): string {
+  if (value == null) return ''
+  if (typeof value !== 'string') return ''
   return value.replace(/\D/g, '')
 }
 

@@ -40,6 +40,8 @@ interface ApplicationWithId {
   updatedAt: Timestamp | string
   appliedAt?: string
   paidAt?: string | null
+  /** 소프트 삭제 시 true, 목록에서 숨김 */
+  deleted?: boolean
 }
 
 const divisionMap: Record<string, string> = {
@@ -217,11 +219,11 @@ export default function MyPage() {
           </div>
         </section>
 
-        {/* Applications List */}
+        {/* Applications List (소프트 삭제된 항목 제외) */}
         <section className="py-12 bg-white">
           <div className="container">
             <div className="max-w-4xl mx-auto">
-              {applications.length === 0 ? (
+              {applications.filter(app => app.deleted !== true).length === 0 ? (
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-16 text-center">
                   <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-2xl font-display text-foreground mb-2">
@@ -240,7 +242,7 @@ export default function MyPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {applications.map((app) => {
+                  {applications.filter(app => app.deleted !== true).map((app) => {
                     const statusInfo = statusConfig[app.status as keyof typeof statusConfig]
                     const StatusIcon = statusInfo.icon
 

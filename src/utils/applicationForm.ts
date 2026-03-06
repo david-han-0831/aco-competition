@@ -50,28 +50,35 @@ export function mapExistingToForm(data: Record<string, unknown>): Partial<Applic
   }
 }
 
+/** Firestore에 안전하게 넣기 위해 문자열 필드는 항상 string으로 (form/저장값이 number 등일 수 있음) */
+function safeStr(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'string') return v
+  return String(v)
+}
+
 /** 신청 폼 데이터를 Firestore applications 문서용 payload로 변환 (연락처는 숫자만 저장, undefined 없음) */
 export function buildFirestorePayload(data: ApplicationFormData): Record<string, unknown> {
   return {
-    name: data.name ?? '',
-    email: data.email ?? '',
-    phone: toPhoneDigits(data.phone ?? ''),
-    guardianPhone: toPhoneDigits(data.guardianPhone ?? ''),
-    zipcode: data.zipcode ?? '',
-    address: data.address ?? '',
-    addressDetail: data.addressDetail ?? '',
-    category: data.category ?? 'elementary_middle',
-    schoolGrade: data.schoolGrade ?? '',
-    division: data.division ?? 'piano',
-    isMajor: data.isMajor ?? 'non_major',
-    piece: data.piece ?? '',
-    instrument: data.division === 'piano' ? '피아노' : (data.instrument ?? ''),
-    depositorName: data.depositorName ?? '',
+    name: safeStr(data.name),
+    email: safeStr(data.email),
+    phone: toPhoneDigits(safeStr(data.phone)),
+    guardianPhone: toPhoneDigits(safeStr(data.guardianPhone)),
+    zipcode: safeStr(data.zipcode),
+    address: safeStr(data.address),
+    addressDetail: safeStr(data.addressDetail),
+    category: safeStr(data.category) || 'elementary_middle',
+    schoolGrade: safeStr(data.schoolGrade),
+    division: safeStr(data.division) || 'piano',
+    isMajor: safeStr(data.isMajor) || 'non_major',
+    piece: safeStr(data.piece),
+    instrument: data.division === 'piano' ? '피아노' : safeStr(data.instrument),
+    depositorName: safeStr(data.depositorName),
     applicationType: 'online',
-    hasAccompanist: data.hasAccompanist ?? false,
-    needAccompanistRequest: data.needAccompanistRequest ?? false,
-    accompanistName: data.accompanistName ?? '',
-    accompanistPhone: toPhoneDigits(data.accompanistPhone ?? ''),
-    privacyConsent: data.privacyConsent ?? false,
+    hasAccompanist: data.hasAccompanist === true,
+    needAccompanistRequest: data.needAccompanistRequest === true,
+    accompanistName: safeStr(data.accompanistName),
+    accompanistPhone: toPhoneDigits(safeStr(data.accompanistPhone)),
+    privacyConsent: data.privacyConsent === true,
   }
 }

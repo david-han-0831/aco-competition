@@ -74,7 +74,11 @@ export default function ApplicationEditModal({
 
   const onSubmit = async (data: ApplicationFormData) => {
     const docId = application && (application.id as string)
-    if (!docId) return
+    if (!docId) {
+      console.error('신청서 수정: document id 없음', application)
+      alert('수정할 신청 정보를 찾을 수 없습니다.')
+      return
+    }
     setSubmitting(true)
     try {
       const payload = buildFirestorePayload(data)
@@ -89,9 +93,16 @@ export default function ApplicationEditModal({
       await updateDoc(doc(db, 'applications', docId), updateData)
       onOpenChange(false)
       onSuccess?.()
-    } catch (e) {
-      console.error('신청서 수정 오류:', e)
-      alert('수정에 실패했습니다. 다시 시도해 주세요.')
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string }
+      console.error('신청서 수정 오류:', err?.code, err?.message, e)
+      if (err?.code === 'permission-denied') {
+        alert('수정 권한이 없습니다. 로그인 상태를 확인해 주세요.')
+      } else if (err?.code === 'not-found') {
+        alert('해당 신청 문서를 찾을 수 없습니다.')
+      } else {
+        alert('수정에 실패했습니다. 다시 시도해 주세요. (오류: ' + (err?.message || '알 수 없음') + ')')
+      }
     } finally {
       setSubmitting(false)
     }
