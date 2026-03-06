@@ -1,6 +1,9 @@
 import type { ApplicationFormData } from '@/utils/validators'
 import { toPhoneDigits } from '@/utils/phone'
 
+const FORM_CATEGORIES: ApplicationFormData['category'][] = ['elementary_middle', 'middle_high', 'university_general']
+const FORM_DIVISIONS: ApplicationFormData['division'][] = ['piano', 'orchestra', 'vocal_children']
+
 /** Firestore/기존 문서 데이터를 신청 폼 defaultValues로 매핑 (하위 호환) */
 export function mapExistingToForm(data: Record<string, unknown>): Partial<ApplicationFormData> {
   const categoryMap: Record<string, ApplicationFormData['category']> = {
@@ -15,6 +18,15 @@ export function mapExistingToForm(data: Record<string, unknown>): Partial<Applic
     orchestra: 'orchestra',
     children_song: 'vocal_children',
   }
+  const rawCategory = data.category as string
+  const rawDivision = data.division as string
+  const category = FORM_CATEGORIES.includes(rawCategory as ApplicationFormData['category'])
+    ? (rawCategory as ApplicationFormData['category'])
+    : (categoryMap[rawCategory] || 'elementary_middle')
+  const division = FORM_DIVISIONS.includes(rawDivision as ApplicationFormData['division'])
+    ? (rawDivision as ApplicationFormData['division'])
+    : (divisionMap[rawDivision] || 'piano')
+
   return {
     name: (data.name as string) || '',
     email: (data.email as string) || '',
@@ -23,9 +35,9 @@ export function mapExistingToForm(data: Record<string, unknown>): Partial<Applic
     zipcode: (data.zipcode as string) || '',
     address: (data.address as string) || '',
     addressDetail: (data.addressDetail as string) || '',
-    category: categoryMap[data.category as string] || 'elementary_middle',
+    category,
     schoolGrade: (data.schoolGrade as string) || '',
-    division: divisionMap[data.division as string] || 'piano',
+    division,
     isMajor: (data.isMajor as ApplicationFormData['isMajor']) || 'non_major',
     piece: (data.piece as string) || '',
     instrument: (data.instrument as string) || '',
@@ -38,28 +50,28 @@ export function mapExistingToForm(data: Record<string, unknown>): Partial<Applic
   }
 }
 
-/** 신청 폼 데이터를 Firestore applications 문서용 payload로 변환 (연락처는 숫자만 저장) */
+/** 신청 폼 데이터를 Firestore applications 문서용 payload로 변환 (연락처는 숫자만 저장, undefined 없음) */
 export function buildFirestorePayload(data: ApplicationFormData): Record<string, unknown> {
   return {
-    name: data.name,
-    email: data.email,
-    phone: toPhoneDigits(data.phone),
-    guardianPhone: toPhoneDigits(data.guardianPhone),
-    zipcode: data.zipcode,
-    address: data.address,
+    name: data.name ?? '',
+    email: data.email ?? '',
+    phone: toPhoneDigits(data.phone ?? ''),
+    guardianPhone: toPhoneDigits(data.guardianPhone ?? ''),
+    zipcode: data.zipcode ?? '',
+    address: data.address ?? '',
     addressDetail: data.addressDetail ?? '',
-    category: data.category,
-    schoolGrade: data.schoolGrade,
-    division: data.division,
-    isMajor: data.isMajor,
-    piece: data.piece,
+    category: data.category ?? 'elementary_middle',
+    schoolGrade: data.schoolGrade ?? '',
+    division: data.division ?? 'piano',
+    isMajor: data.isMajor ?? 'non_major',
+    piece: data.piece ?? '',
     instrument: data.division === 'piano' ? '피아노' : (data.instrument ?? ''),
-    depositorName: data.depositorName,
+    depositorName: data.depositorName ?? '',
     applicationType: 'online',
     hasAccompanist: data.hasAccompanist ?? false,
     needAccompanistRequest: data.needAccompanistRequest ?? false,
     accompanistName: data.accompanistName ?? '',
     accompanistPhone: toPhoneDigits(data.accompanistPhone ?? ''),
-    privacyConsent: data.privacyConsent,
+    privacyConsent: data.privacyConsent ?? false,
   }
 }

@@ -73,14 +73,20 @@ export default function ApplicationEditModal({
   const [submitting, setSubmitting] = useState(false)
 
   const onSubmit = async (data: ApplicationFormData) => {
-    if (!application?.id) return
+    const docId = application && (application.id as string)
+    if (!docId) return
     setSubmitting(true)
     try {
       const payload = buildFirestorePayload(data)
-      await updateDoc(doc(db, 'applications', application.id as string), {
+      const updateData: Record<string, unknown> = {
         ...payload,
         updatedAt: serverTimestamp(),
+      }
+      // Firestore는 undefined 값을 허용하지 않으므로 제거
+      Object.keys(updateData).forEach((key) => {
+        if (updateData[key] === undefined) delete updateData[key]
       })
+      await updateDoc(doc(db, 'applications', docId), updateData)
       onOpenChange(false)
       onSuccess?.()
     } catch (e) {
