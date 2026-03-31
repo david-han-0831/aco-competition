@@ -17,7 +17,7 @@ export default function AboutPage() {
             <div className="w-24 h-1.5 bg-accent-gold mx-auto" />
             <p className="text-xl lg:text-2xl text-muted-foreground font-light leading-relaxed">
               음악을 사랑하는 모든 이들에게 열린<br />
-              안양대학교 평생교육원의 첫 번째 음악 축제
+              안양시민오케스트라의 첫 번째 음악 축제
             </p>
           </div>
         </div>
@@ -35,7 +35,7 @@ export default function AboutPage() {
                 </h2>
                 <div className="w-16 h-1 bg-accent-gold" />
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  안양대학교 평생교육원은 지역 사회와 함께 성장하며, 문화예술 발전에 기여하고자 이번 음악콩쿠르를 개최합니다.
+                  안양시민오케스트라는 지역 사회와 함께 성장하며, 문화예술 발전에 기여하고자 이번 음악콩쿠르를 개최합니다.
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   이번 대회는 단순한 경쟁의 장을 넘어, 음악을 사랑하는 모든 이들이 서로의 재능을 격려하고 나누는 축제의 장이 될 것입니다.
@@ -150,8 +150,7 @@ export default function AboutPage() {
                       <div className="w-2 h-2 mt-2 rounded-full bg-accent-gold" />
                       <div>
                         <div className="text-sm opacity-80 mb-1">주최 · 주관</div>
-                        <div className="text-xl font-semibold">{COMPETITION_INFO.organizer}</div>
-                        <div className="text-sm opacity-80 mt-0.5">{COMPETITION_INFO.host}</div>
+                        <div className="text-xl font-semibold">안양시민오케스트라</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">

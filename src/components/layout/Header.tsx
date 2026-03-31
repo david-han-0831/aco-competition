@@ -46,16 +46,16 @@ export default function Header() {
             <div className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <img 
                 src="/logo/logo.png" 
-                alt="안양대학교 평생교육원 음악콩쿠르 로고" 
+                alt="안양시민오케스트라 음악 콩쿠르 로고" 
                 className="w-full h-full object-contain"
               />
             </div>
             <div className="hidden sm:block">
-              <div className="font-display text-xl font-bold text-foreground">
-                안양대학교 평생교육원
-              </div>
               <div className="text-xs text-muted-foreground">
-                음악콩쿠르
+                2026 제1회
+              </div>
+              <div className="font-display text-xl font-bold text-foreground">
+                안양시민오케스트라 음악 콩쿠르
               </div>
             </div>
           </Link>

@@ -17,11 +17,12 @@ export default function Footer() {
                 <Music2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="font-display text-lg font-bold">
-                  안양대학교 평생교육원
+                <div className="font-display text-lg font-bold leading-tight">
+                  안양시민오케스트라<br />
+                  음악 콩쿠르
                 </div>
                 <div className="text-sm text-gray-400">
-                  음악콩쿠르
+                  2026 제1회
                 </div>
               </div>
             </div>
@@ -78,7 +79,7 @@ export default function Footer() {
             <span className="font-display text-sm md:text-base font-semibold text-gray-300 whitespace-nowrap flex-shrink-0 sm:pl-0">후원</span>
             <div className="w-px h-14 md:h-16 bg-gray-500 flex-shrink-0 hidden sm:block" aria-hidden />
             <div className="flex flex-1 min-w-0 items-center justify-between md:justify-around gap-3 md:gap-5 flex-nowrap">
-              <img src="/img/anyang_university.jpg" alt="안양대학교 평생교육원" className="h-14 md:h-16 w-auto min-w-0 flex-1 max-w-[160px] md:max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity flex-shrink" />
+              <img src="/img/anyang_university.jpg" alt="안양시민오케스트라 음악 콩쿠르" className="h-14 md:h-16 w-auto min-w-0 flex-1 max-w-[160px] md:max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity flex-shrink" />
               <img src="/img/contents_culture-place.png" alt="Contents Culture Place" className="h-14 md:h-16 w-auto min-w-0 flex-1 max-w-[160px] md:max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity flex-shrink" />
               <img src="/img/goldenmusic.png" alt="Goldenmusic Entertainment" className="h-14 md:h-16 w-auto min-w-0 flex-1 max-w-[160px] md:max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity flex-shrink" />
               <img src="/img/new-philharmonic.jpg" alt="New Philharmonic Orchestra" className="h-14 md:h-16 w-auto min-w-0 flex-1 max-w-[160px] md:max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity flex-shrink" />
@@ -89,7 +90,7 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <p>© 2026 안양대학교 평생교육원. All rights reserved.</p>
+            <p>© 2026 안양시민오케스트라 음악 콩쿠르. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-accent-gold transition-colors">이용약관</a>
               <a href="#" className="hover:text-accent-gold transition-colors">개인정보처리방침</a>

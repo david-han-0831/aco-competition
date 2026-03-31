@@ -19,10 +19,9 @@ export default function HomePage() {
             <div className="space-y-12 animate-fade-up">
               {/* Main Title */}
               <div className="space-y-6">
-                <h1 className="font-display text-display-lg lg:text-display-xl text-foreground leading-none">
-                  안양대학교<br />
-                  평생교육원<br />
-                  <span className="text-primary-burgundy">음악콩쿠르</span>
+                <h1 className="font-display text-4xl lg:text-6xl text-foreground leading-tight">
+                  안양시민오케스트라<br />
+                  <span className="text-primary-burgundy">음악 콩쿠르</span>
                 </h1>
                 <p className="text-xl lg:text-2xl text-muted-foreground font-light max-w-lg">
                   음악을 사랑하는 모든 이에게 열린 무대
