@@ -16,7 +16,8 @@ import { mapExistingToForm, buildFirestorePayload } from '@/utils/applicationFor
 import { Button } from '@/components/ui/button'
 import { Music2, LogIn, LogOut, AlertCircle, FileDown, Phone } from 'lucide-react'
 import SuccessModal from '@/components/ui/SuccessModal'
-import { APPLICATION_DEADLINE, OFFLINE_APPLICATION, COMPETITION_INFO } from '@/utils/constants'
+import { OFFLINE_APPLICATION, COMPETITION_INFO } from '@/utils/constants'
+import { isApplicationOpen, APPLICATION_CLOSED_MESSAGE } from '@/utils/applicationDeadline'
 import ApplicationForm from '@/components/application/ApplicationForm'
 
 const googleProvider = new GoogleAuthProvider()
@@ -138,6 +139,10 @@ export default function ApplyPage() {
       alert('로그인이 필요합니다.')
       return
     }
+    if (!isApplicationOpen()) {
+      alert(APPLICATION_CLOSED_MESSAGE)
+      return
+    }
     if (existingApplication && !isEditMode) {
       setShowDuplicateModal(true)
       return
@@ -203,8 +208,8 @@ export default function ApplyPage() {
     )
   }
 
-  // 2026-06-27 00:00 이후 신청 불가 (2026-02-28)
-  if (new Date() >= APPLICATION_DEADLINE) {
+  // 2026-06-27 00:00 이후 신청 불가
+  if (!isApplicationOpen()) {
     return (
       <div className="relative min-h-screen bg-white">
         <section className="py-48 relative">
@@ -219,6 +224,15 @@ export default function ApplyPage() {
                 <br />
                 문의사항은 {COMPETITION_INFO.contact.phone}로 연락해 주세요.
               </p>
+              <div className="mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/mypage')}
+                  className="rounded-xl border-2 px-6"
+                >
+                  기존 신청 확인하기
+                </Button>
+              </div>
             </div>
           </div>
         </section>

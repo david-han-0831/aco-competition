@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Music2, Award, Calendar, MapPin, Trophy } from 'lucide-react'
 import { COMPETITION_INFO } from '@/utils/constants'
+import { isApplicationOpen } from '@/utils/applicationDeadline'
 
 export default function HomePage() {
+  const applicationOpen = isApplicationOpen()
   return (
     <div className="relative">
       {/* Hero Section - Full Screen Split Design */}
@@ -30,12 +32,18 @@ export default function HomePage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link to="/apply" className="group">
-                  <Button size="lg" className="w-full sm:w-auto bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 text-base font-semibold rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300">
-                    콩쿠르 신청하기
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
+                {applicationOpen ? (
+                  <Link to="/apply" className="group">
+                    <Button size="lg" className="w-full sm:w-auto bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 text-base font-semibold rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300">
+                      콩쿠르 신청하기
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <div className="w-full sm:w-auto px-8 py-6 text-base font-semibold rounded-xl border-2 border-gray-200 bg-gray-50 text-muted-foreground text-center">
+                    접수가 마감되었습니다
+                  </div>
+                )}
                 <Link to="/about">
                   <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-base font-semibold rounded-xl border-2 hover:bg-gray-50 transition-all duration-300">
                     자세히 보기
@@ -248,12 +256,18 @@ export default function HomePage() {
                 음악에 대한 열정을 마음껏 펼칠 수 있는 기회
               </p>
             </div>
-            <Link to="/apply" className="inline-block">
-              <Button size="lg" className="bg-primary-burgundy text-white hover:bg-primary-wine px-12 py-8 text-lg font-bold rounded-2xl shadow-elegant hover:scale-105 transition-transform duration-300">
-                지금 신청하기
-                <ArrowRight className="w-6 h-6 ml-2" />
-              </Button>
-            </Link>
+            {applicationOpen ? (
+              <Link to="/apply" className="inline-block">
+                <Button size="lg" className="bg-primary-burgundy text-white hover:bg-primary-wine px-12 py-8 text-lg font-bold rounded-2xl shadow-elegant hover:scale-105 transition-transform duration-300">
+                  지금 신청하기
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <p className="text-lg text-muted-foreground">
+                접수가 마감되었습니다. 문의: {COMPETITION_INFO.contact.phone}
+              </p>
+            )}
           </div>
         </div>
       </section>

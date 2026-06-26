@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
-import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User as FirebaseUser } from 'firebase/auth'
+import { collection, query, where, orderBy, onSnapshot, Timestamp, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { 
@@ -10,9 +10,14 @@ import {
   XCircle, 
   FileText,
   ArrowRight,
-  RotateCcw
+  RotateCcw,
+  LogIn,
 } from 'lucide-react'
 import ApplicationEditModal from '@/components/application/ApplicationEditModal'
+import { isApplicationOpen } from '@/utils/applicationDeadline'
+import { COMPETITION_INFO } from '@/utils/constants'
+
+const googleProvider = new GoogleAuthProvider()
 
 interface ApplicationWithId {
   id: string
@@ -101,12 +106,35 @@ export default function MyPage() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user)
       setLoading(false)
-      if (!user) {
+      if (!user && isApplicationOpen()) {
         navigate('/apply')
       }
     })
     return unsubscribe
   }, [navigate])
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const firebaseUser = result.user
+      const userRef = doc(db, 'users', firebaseUser.uid)
+      const userSnap = await getDoc(userRef)
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName || '',
+          role: 'user',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        })
+      }
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string }
+      if (err?.code === 'auth/popup-closed-by-user') return
+      alert(`로그인에 실패했습니다: ${err?.message || '알 수 없는 오류'}`)
+    }
+  }
 
   // 현재 사용자의 신청서만 가져오기
   useEffect(() => {
@@ -195,7 +223,30 @@ export default function MyPage() {
   }
 
   if (!user) {
-    return null
+    return (
+      <div className="relative min-h-screen bg-white">
+        <section className="py-48 relative">
+          <div className="container relative z-10">
+            <div className="max-w-md mx-auto text-center space-y-6">
+              <h1 className="text-3xl font-display text-foreground">신청 현황</h1>
+              <p className="text-muted-foreground">
+                기존 신청 내역을 확인하려면 로그인해 주세요.
+              </p>
+              <Button
+                onClick={handleGoogleSignIn}
+                className="bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 rounded-xl font-semibold"
+              >
+                <LogIn className="w-5 h-5 mr-2" />
+                Google로 로그인
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                접수가 마감되었습니다. 문의: {COMPETITION_INFO.contact.phone}
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    )
   }
 
   return (
@@ -230,15 +281,17 @@ export default function MyPage() {
                     아직 신청한 내역이 없습니다
                   </h3>
                   <p className="text-muted-foreground mb-8">
-                    콩쿠르에 신청해보세요
+                    {isApplicationOpen() ? '콩쿠르에 신청해보세요' : '접수 기간이 종료되었습니다'}
                   </p>
-                  <Button
-                    onClick={() => navigate('/apply')}
-                    className="bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 rounded-xl font-semibold shadow-elegant hover:shadow-glow transition-all duration-300"
-                  >
-                    신청하러 가기
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
+                  {isApplicationOpen() && (
+                    <Button
+                      onClick={() => navigate('/apply')}
+                      className="bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 rounded-xl font-semibold shadow-elegant hover:shadow-glow transition-all duration-300"
+                    >
+                      신청하러 가기
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-6">

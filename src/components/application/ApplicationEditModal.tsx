@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import ApplicationForm from './ApplicationForm'
+import { isApplicationOpen, APPLICATION_CLOSED_MESSAGE } from '@/utils/applicationDeadline'
 
 export interface ApplicationEditModalProps {
   application: Record<string, unknown> | null
@@ -71,8 +72,13 @@ export default function ApplicationEditModal({
   }, [open, application, reset])
 
   const [submitting, setSubmitting] = useState(false)
+  const applicationOpen = isApplicationOpen()
 
   const onSubmit = async (data: ApplicationFormData) => {
+    if (!applicationOpen) {
+      alert(APPLICATION_CLOSED_MESSAGE)
+      return
+    }
     const docId = application && (application.id as string)
     if (!docId) {
       console.error('신청서 수정: document id 없음', application)
@@ -97,7 +103,7 @@ export default function ApplicationEditModal({
       const err = e as { code?: string; message?: string }
       console.error('신청서 수정 오류:', err?.code, err?.message, e)
       if (err?.code === 'permission-denied') {
-        alert('수정 권한이 없습니다. 로그인 상태를 확인해 주세요.')
+        alert(applicationOpen ? '수정 권한이 없습니다. 로그인 상태를 확인해 주세요.' : APPLICATION_CLOSED_MESSAGE)
       } else if (err?.code === 'not-found') {
         alert('해당 신청 문서를 찾을 수 없습니다.')
       } else {
@@ -114,8 +120,13 @@ export default function ApplicationEditModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-display">신청 상세 / 수정</DialogTitle>
+          <DialogTitle className="text-2xl font-display">
+            {applicationOpen ? '신청 상세 / 수정' : '신청 상세'}
+          </DialogTitle>
         </DialogHeader>
+        {!applicationOpen && (
+          <p className="text-sm text-muted-foreground -mt-2">{APPLICATION_CLOSED_MESSAGE}</p>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="py-4">
           <ApplicationForm
             register={register}
@@ -125,6 +136,7 @@ export default function ApplicationEditModal({
             setValue={setValue}
             submitLabel="수정 완료"
             submitting={submitting}
+            readOnly={!applicationOpen}
           />
         </form>
       </DialogContent>

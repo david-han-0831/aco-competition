@@ -1,9 +1,11 @@
 import { Music2, Phone, MapPin } from 'lucide-react'
 import { COMPETITION_INFO } from '@/utils/constants'
+import { isApplicationOpen } from '@/utils/applicationDeadline'
 
 const FOOTER_LOCATION = '경기도 안양시\n' + COMPETITION_INFO.location
 
 export default function Footer() {
+  const applicationOpen = isApplicationOpen()
   return (
     <footer className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <div className="absolute inset-0 grain opacity-50" />
@@ -38,7 +40,9 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><a href="/about" className="hover:text-accent-gold transition-colors">콩쿠르 소개</a></li>
               <li><a href="/guide" className="hover:text-accent-gold transition-colors">신청 안내</a></li>
-              <li><a href="/apply" className="hover:text-accent-gold transition-colors">신청하기</a></li>
+              {applicationOpen && (
+                <li><a href="/apply" className="hover:text-accent-gold transition-colors">신청하기</a></li>
+              )}
             </ul>
           </div>
 

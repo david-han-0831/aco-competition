@@ -16,6 +16,11 @@ service cloud.firestore {
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
+
+    // 2026-06-27 00:00 KST (= 2026-06-26 15:00 UTC)
+    function isApplicationOpen() {
+      return request.time < timestamp.date(2026, 6, 26) + duration.value(15, 'h');
+    }
     
     // users 컬렉션
     match /users/{userId} {
@@ -36,13 +41,15 @@ service cloud.firestore {
       // 읽기: 인증된 사용자 (목록은 클라이언트에서 본인 필터링)
       allow read: if isAuthenticated();
       
-      // 생성: 인증된 사용자가 자신의 신청서만 생성 가능
-      allow create: if isAuthenticated() && 
-        request.resource.data.userId == request.auth.uid;
+      // 생성: 접수 기간 내 본인 신청 또는 관리자 대량 등록(오프라인)
+      allow create: if isAuthenticated() && (
+        isAdmin() ||
+        (request.resource.data.userId == request.auth.uid && isApplicationOpen())
+      );
       
-      // 수정/삭제: 관리자 또는 해당 신청서 소유자(본인)만 가능
+      // 수정/삭제: 관리자 또는 접수 기간 내 해당 신청서 소유자(본인)
       allow update, delete: if isAdmin() ||
-        (isAuthenticated() && request.auth.uid == resource.data.userId);
+        (isAuthenticated() && request.auth.uid == resource.data.userId && isApplicationOpen());
     }
     
     // settings 컬렉션

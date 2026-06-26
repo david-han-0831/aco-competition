@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth
 import { auth } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { User, LogOut } from 'lucide-react'
+import { isApplicationOpen } from '@/utils/applicationDeadline'
 
 export default function Header() {
   const location = useLocation()
@@ -36,6 +37,8 @@ export default function Header() {
     { href: '/about', label: '콩쿠르 소개' },
     { href: '/guide', label: '신청 안내' },
   ]
+
+  const applicationOpen = isApplicationOpen()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
@@ -111,7 +114,7 @@ export default function Header() {
                   <LogOut className="w-4 h-4" />
                 </Button>
               </div>
-            ) : (
+            ) : applicationOpen ? (
               <>
                 <Link to="/apply">
                   <Button 
@@ -127,6 +130,12 @@ export default function Header() {
                   </Button>
                 </Link>
               </>
+            ) : (
+              <Link to="/mypage">
+                <Button className="bg-primary-burgundy hover:bg-primary-wine text-white px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                  신청 현황
+                </Button>
+              </Link>
             )}
           </div>
         </div>

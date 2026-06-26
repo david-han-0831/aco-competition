@@ -18,6 +18,7 @@ export interface ApplicationFormProps {
   setValue: UseFormSetValue<ApplicationFormData>
   submitLabel?: string
   submitting?: boolean
+  readOnly?: boolean
 }
 
 export default function ApplicationForm({
@@ -28,6 +29,7 @@ export default function ApplicationForm({
   setValue,
   submitLabel = '신청서 제출하기',
   submitting = false,
+  readOnly = false,
 }: ApplicationFormProps) {
   const division = watch('division')
   const category = watch('category')
@@ -35,6 +37,7 @@ export default function ApplicationForm({
 
   return (
     <div className="space-y-8">
+      <fieldset disabled={readOnly} className="space-y-8 border-0 p-0 m-0 min-w-0">
       {/* 개인 정보 */}
       <div className="space-y-6">
         <h2 className="text-2xl font-display text-foreground border-b-2 border-primary-burgundy/20 pb-3">
@@ -176,10 +179,13 @@ export default function ApplicationForm({
       </div>
 
       <div className="pt-6">
-        <Button type="submit" size="lg" disabled={submitting} className="w-full bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 text-base font-semibold rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300">
-          {submitting ? '저장 중...' : submitLabel}
-        </Button>
+        {!readOnly && (
+          <Button type="submit" size="lg" disabled={submitting} className="w-full bg-primary-burgundy hover:bg-primary-wine text-white px-8 py-6 text-base font-semibold rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300">
+            {submitting ? '저장 중...' : submitLabel}
+          </Button>
+        )}
       </div>
+      </fieldset>
     </div>
   )
 }
