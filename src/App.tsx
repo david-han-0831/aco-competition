@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import HomePage from '@/pages/HomePage'
 import AboutPage from '@/pages/AboutPage'
 import GuidePage from '@/pages/GuidePage'
+import ResultsPage from '@/pages/ResultsPage'
 import LoginPage from '@/pages/LoginPage'
 import SignupPage from '@/pages/SignupPage'
 import ApplyPage from '@/pages/ApplyPage'
@@ -24,6 +25,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/guide" element={<GuidePage />} />
+          <Route path="/results" element={<ResultsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/apply" element={<ApplyPage />} />

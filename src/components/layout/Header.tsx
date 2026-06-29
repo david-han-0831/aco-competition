@@ -36,6 +36,7 @@ export default function Header() {
   const navLinks = [
     { href: '/about', label: '콩쿠르 소개' },
     { href: '/guide', label: '신청 안내' },
+    { href: '/results', label: '입상자 발표', highlight: true },
   ]
 
   const applicationOpen = isApplicationOpen()
@@ -72,10 +73,15 @@ export default function Header() {
                 className={`relative text-sm font-medium transition-colors duration-200 ${
                   isActive(link.href)
                     ? 'text-primary-burgundy'
+                    : link.highlight
+                    ? 'text-primary-burgundy hover:text-primary-wine font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {link.label}
+                {link.highlight && !isActive(link.href) && (
+                  <span className="absolute -top-1.5 -right-2.5 w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                )}
                 {isActive(link.href) && (
                   <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary-burgundy" />
                 )}

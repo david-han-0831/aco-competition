@@ -8,6 +8,23 @@ export default function HomePage() {
   const applicationOpen = isApplicationOpen()
   return (
     <div className="relative">
+      {/* 입상자 발표 배너 */}
+      <Link to="/results" className="block group">
+        <div className="bg-primary-burgundy text-white">
+          <div className="container">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 py-3 text-sm sm:text-base">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-accent-gold shrink-0" />
+              <span className="font-semibold">제1회 입상자 발표</span>
+              <span className="hidden sm:inline text-white/80">— 입상자 명단이 공개되었습니다</span>
+              <span className="inline-flex items-center gap-1 font-medium underline underline-offset-4 group-hover:gap-2 transition-all">
+                확인하기
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* Hero Section - Full Screen Split Design */}
       <section className="relative min-h-[95vh] flex items-center overflow-hidden">
         {/* Background Elements - White tone */}
@@ -40,7 +57,7 @@ export default function HomePage() {
                     </Button>
                   </Link>
                 ) : (
-                  <div className="w-full sm:w-auto px-8 py-6 text-base font-semibold rounded-xl border-2 border-gray-200 bg-gray-50 text-muted-foreground text-center">
+                  <div className="inline-flex items-center justify-center w-full sm:w-auto h-10 px-8 py-6 text-base font-semibold rounded-xl border-2 border-gray-200 bg-gray-50 text-muted-foreground">
                     접수가 마감되었습니다
                   </div>
                 )}
